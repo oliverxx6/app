@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "316360509652",
+    "project_id": "quicklick-9fbbb",
+    "storage_bucket": "quicklick-9fbbb.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:316360509652:android:bf62bfc91c600db9d75341",
+        "android_client_info": {
+          "package_name": "com.quicklick.quicklick"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "316360509652-rtd6vktd9hvem850alstgj3r35d7tj0k.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.quicklick.quicklick",
+            "certificate_hash": "c056419a065cefdea19192937d6aa97e2644dd6e"
+          }
+        },
+        {
+          "client_id": "316360509652-mlit7st390ael49qrg9crauf339mjnsb.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAzOjZEtTecyi4m99Xodxcax6cx2k864bo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "316360509652-mlit7st390ael49qrg9crauf339mjnsb.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "316360509652-sf2p6lj4gevjiv252c860agknuigkv0c.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.quicklick.quicklick"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
