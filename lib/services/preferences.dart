@@ -89,3 +89,93 @@ class PreferencesName {
     _preferencesName?.remove('name');
   }
 }
+
+class PreferencesJob {
+  static String? _job;
+  static SharedPreferences? _preferencesJob;
+
+  static Future<SharedPreferences?> initPreferencesJob() async {
+    _preferencesJob = await SharedPreferences.getInstance();
+    return _preferencesJob;
+  }
+
+  static Future<String?> get preferencesJobs async {
+    await initPreferencesJob();
+    _job = _preferencesJob?.getString('job') ?? "";
+    return _job;
+  }
+
+  static Future<void> setJob(String job) async {
+    if (_preferencesJob == null) {
+      await initPreferencesJob();
+    }
+    _preferencesJob?.setString('job', job);
+  }
+
+  static Future<void> deletePreferencesJob() async {
+    if (_preferencesJob == null) {
+      await initPreferencesJob();
+    }
+    _preferencesJob?.remove('job');
+  }
+}
+
+class PreferencesJobTwo {
+  static String? _job;
+  static SharedPreferences? _preferencesJob;
+
+  static Future<SharedPreferences?> initPreferencesJob() async {
+    _preferencesJob = await SharedPreferences.getInstance();
+    return _preferencesJob;
+  }
+
+  static Future<String?> get preferencesJobs async {
+    await initPreferencesJob();
+    _job = _preferencesJob?.getString('jobTwo') ?? "";
+    return _job;
+  }
+
+  static Future<void> setJob(String job) async {
+    if (_preferencesJob == null) {
+      await initPreferencesJob();
+    }
+    _preferencesJob?.setString('jobTwo', job);
+  }
+
+  static Future<void> deletePreferencesJob() async {
+    if (_preferencesJob == null) {
+      await initPreferencesJob();
+    }
+    _preferencesJob?.remove('jobTwo');
+  }
+}
+
+class PreferencesCity {
+  static String? _city;
+  static SharedPreferences? _preferencesCity;
+
+  static Future<SharedPreferences?> initPreferencesCity() async {
+    _preferencesCity = await SharedPreferences.getInstance();
+    return _preferencesCity;
+  }
+
+  static Future<String?> get preferencesCities async {
+    await initPreferencesCity();
+    _city = _preferencesCity?.getString('city') ?? "";
+    return _city;
+  }
+
+  static Future<void> setCity(String city) async {
+    if (_preferencesCity == null) {
+      await initPreferencesCity();
+    }
+    _preferencesCity?.setString('city', city);
+  }
+
+  static Future<void> deletePreferencesCity() async {
+    if (_preferencesCity == null) {
+      await initPreferencesCity();
+    }
+    _preferencesCity?.remove('city');
+  }
+}

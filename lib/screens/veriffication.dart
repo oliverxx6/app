@@ -1,12 +1,13 @@
 import 'dart:async';
-
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:quicklick/services/auth.dart';
 import 'package:quicklick/services/preferences.dart';
+import 'package:quicklick/widgets/dialog_method.dart';
 
 class Verification extends StatefulWidget {
   const Verification({super.key});
@@ -23,161 +24,7 @@ class _Verification extends State<Verification> {
   bool veri = false;
   bool lastVersion = false;
 
-  // Future<void> _showInstallInstructions(BuildContext context) async {
-  //     await showDialog(
-  //       context: context,
-  //       builder: (context) {
-  //         return AlertDialog(
-  //           backgroundColor: Colors.black,
-  //           title: Text("¿Cómo instalar?", style: TextStyle(color: Colors.white)),
-  //           content: Text(
-  //             "Después de descargar el archivo, ábrelo para instalar. Si ves un mensaje de seguridad, permite la instalación desde fuentes desconocidas.",
-  //             style: TextStyle(color: Colors.white),
-  //           ),
-  //           actions: [
-  //             TextButton(
-  //               onPressed: () => Navigator.pop(context),
-  //               child: Text("Entendido", style: TextStyle(fontSize: 20)),
-  //             ),
-  //           ],
-  //         );
-  //       },
-  //     );
-  //   }
-
-  Future<void> _updateVersionDialog(BuildContext context) async {
-    await showDialog(
-      context: context,
-      builder: (context) {
-        return SingleChildScrollView(
-          child: AlertDialog(
-            backgroundColor: const Color.fromARGB(255, 27, 26, 26),
-            elevation: 30,
-            //content: Image.asset("assets/logo.png"),
-            title: Text(
-              "Se encontro una nueva version de la app",
-              style: TextStyle(color: Colors.white),
-            ),
-            actions: [
-              TextButton(
-                onPressed: () async {
-                  // try {
-                  //   final storageRef = FirebaseStorage.instance
-                  //       .ref()
-                  //       .child("xmeet")
-                  //       .child("app-release.apk");
-                  //   final downloadUrl = await storageRef.getDownloadURL();
-                  //   Future.delayed(
-                  //     Duration(seconds: 3),
-                  //   ).then((value) => launchUrl(Uri.parse(downloadUrl)));
-                  //   context.mounted ? _showInstallInstructions(context) : null;
-                  // } catch (e) {
-                  //   if (context.mounted) {
-                  //     _messageError(context, e.toString());
-                  //   }
-                  // }
-                },
-                child: Text("Actualizar", style: TextStyle(fontSize: 25)),
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
-
-  Future<void> _showBlockedDialog(BuildContext context) async {
-    await showDialog(
-      context: context,
-      builder: (context) {
-        return SingleChildScrollView(
-          child: AlertDialog(
-            backgroundColor: const Color.fromARGB(255, 27, 26, 26),
-            elevation: 30,
-            //content: Image.asset("assets/logo.png"),
-            title: Text(
-              "Para continuar con el uso de la membresia, comuníquese al WhatsApp: ",
-              style: TextStyle(color: Colors.white),
-            ),
-            actions: [
-              TextButton(
-                onPressed: () async {
-                  await AuthService.signOut();
-                  await Preferences.deletePreferences();
-                  await PreferencesRegister.deletePreferences();
-                  SystemNavigator.pop();
-                },
-                child: Text("Salir", style: TextStyle(fontSize: 25)),
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
-
-  Future<void> initVerification(BuildContext context) async {
-    try {
-      if ((userId?.isEmpty ?? true) &&
-          (email?.isEmpty ?? true) &&
-          (name?.isEmpty ?? true)) {
-        if (context.mounted) {
-          Navigator.pushNamedAndRemoveUntil(
-            context,
-            "politics",
-            (Route<dynamic> route) => false,
-          );
-          return;
-        }
-      } else if (veri == false && lastVersion == false) {
-        Navigator.pushNamedAndRemoveUntil(
-          context,
-          "pages",
-          (Route<dynamic> route) => false,
-        );
-        return;
-      } else {
-        await AuthService.signInWithGoogle();
-      }
-    } on FirebaseAuthException catch (e) {
-      if (e.code == 'user-disabled' && context.mounted) {
-        await _showBlockedDialog(context);
-        return;
-      } else {
-        if (context.mounted) {
-          Navigator.pushNamedAndRemoveUntil(
-            context,
-            "politics",
-            (Route<dynamic> route) => false,
-          );
-          return;
-        }
-      }
-    } catch (e) {
-      if (context.mounted) {
-        Navigator.pushNamedAndRemoveUntil(
-          context,
-          "internet",
-          (Route<dynamic> route) => false,
-        );
-      }
-      e;
-    }
-    final bool status = await AuthService.checkUserStatus();
-    if (status && context.mounted) {
-      await _showBlockedDialog(context);
-    } else if (lastVersion && context.mounted) {
-      _updateVersionDialog(context);
-    } else if (context.mounted) {
-      Navigator.pushNamedAndRemoveUntil(
-        context,
-        "pages",
-        (Route<dynamic> route) => false,
-      );
-      return;
-    }
-  }
-
+  //Este metodo primero verifica si hay conexxion  internet
   Future<void> _verificationAll(BuildContext context) async {
     final connectivityResult = await (Connectivity().checkConnectivity());
     if (connectivityResult.contains(ConnectivityResult.none)) {
@@ -204,21 +51,112 @@ class _Verification extends State<Verification> {
     }
   }
 
+  Future<void> initVerification(BuildContext context) async {
+    try {
+      if ((userId?.isEmpty ?? true) &&
+          (email?.isEmpty ?? true) &&
+          (name?.isEmpty ?? true)) {
+        if (context.mounted) {
+          Navigator.pushNamedAndRemoveUntil(
+            context,
+            "politics",
+            (Route<dynamic> route) => false,
+          );
+          return;
+        }
+      } else if (veri == false && lastVersion == false) {
+        Navigator.pushNamedAndRemoveUntil(
+          context,
+          "pages",
+          (Route<dynamic> route) => false,
+        );
+        return;
+      } else if (veri || lastVersion) {
+        Navigator.pushNamedAndRemoveUntil(
+          context,
+          "pages",
+          (Route<dynamic> route) => false,
+        );
+      } else {
+        await AuthService.signInWithGoogle();
+      }
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'user-disabled' && context.mounted) {
+        await DialogMethod.showBlockedDialog(context);
+        return;
+      } else {
+        if (context.mounted) {
+          Navigator.pushNamedAndRemoveUntil(
+            context,
+            "politics",
+            (Route<dynamic> route) => false,
+          );
+          return;
+        }
+      }
+    } catch (e) {
+      if (context.mounted) {
+        Navigator.pushNamedAndRemoveUntil(
+          context,
+          "internet",
+          (Route<dynamic> route) => false,
+        );
+      }
+      e;
+    }
+    final bool status = await AuthService.checkUserStatus();
+    if (status && context.mounted) {
+      await DialogMethod.showBlockedDialog(context);
+    } else if (lastVersion && context.mounted) {
+      await DialogMethod.updateVersionDialog(context);
+    }
+  }
+
   Future<void> _initPreferences() async {
     email = await Preferences.preferences;
     userId = await PreferencesRegister.preferences;
     name = await PreferencesName.preferencesName;
   }
 
+  Future<String> getInstalledVersion() async {
+    PackageInfo packageInfo = await PackageInfo.fromPlatform();
+    return packageInfo.version;
+  }
+
+  Future<void> _remoteConfig() async {
+    final remoteConfig = FirebaseRemoteConfig.instance;
+    await remoteConfig.setConfigSettings(
+      RemoteConfigSettings(
+        fetchTimeout: const Duration(minutes: 1),
+        minimumFetchInterval: Duration(hours: 1),
+      ),
+    );
+    await remoteConfig.fetchAndActivate();
+
+    final String veripay = remoteConfig.getString("pay");
+    final String verificationPay = "verificado";
+    if (veripay != verificationPay) {
+      veri = true;
+    }
+
+    final String latestVersion = remoteConfig.getString("last_version");
+    final currentVersion = await getInstalledVersion();
+    if (latestVersion != currentVersion) {
+      lastVersion = true;
+    }
+  }
+
+  Future<void> _initIsNotWeb() async {
+    await _remoteConfig();
+    await _initPreferences();
+    if (mounted) await _verificationAll(context);
+  }
+
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      //await _remoteConfig();
-      await _initPreferences(); // Espera que se carguen bien los datos locales
-      if (mounted) {
-        await _verificationAll(context);
-      } // Luego continúa con toda la verificación
+      _initIsNotWeb();
     });
   }
 

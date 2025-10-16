@@ -14,11 +14,11 @@
       },
       "oauth_client": [
         {
-          "client_id": "316360509652-rtd6vktd9hvem850alstgj3r35d7tj0k.apps.googleusercontent.com",
+          "client_id": "316360509652-g0htq3c4nm5jrskk9e60q81hh9mbrn4m.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.quicklick.quicklick",
-            "certificate_hash": "c056419a065cefdea19192937d6aa97e2644dd6e"
+            "certificate_hash": "342939b91b673e4add3bc4f38342a335268d2e57"
           }
         },
         {

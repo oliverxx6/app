@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:quicklick/screens/button_sheet.dart';
 import 'package:quicklick/services/auth.dart';
 import 'package:quicklick/services/crud.dart';
 import 'package:quicklick/services/preferences.dart';
 
 class Draw {
   static Widget draw(
+    GlobalKey<ScaffoldState> globalkey,
     BuildContext context,
     String email,
     String userId,
@@ -18,28 +20,34 @@ class Draw {
       child: Column(
         children: <Widget>[
           UserAccountsDrawerHeader(
-            accountName: Text(
-              "Opciones",
-              style: TextStyle(color: Colors.black, fontSize: 25),
+            accountName: const Text(
+              "Bienvenido",
+              style: TextStyle(
+                color: Colors.black,
+                fontSize: 25,
+                fontWeight: FontWeight.bold,
+              ),
             ),
             accountEmail: Text(
               email,
-              style: TextStyle(color: Colors.black, fontSize: 25),
+              style: TextStyle(
+                color: Color.fromARGB(255, 5, 19, 216),
+                fontSize: 25,
+                fontWeight: FontWeight.bold,
+              ),
             ),
             decoration: BoxDecoration(
               color: Colors.black12,
               image: DecorationImage(
-                image: NetworkImage(
-                  "https://www.bizneo.com/blog/wp-content/uploads/2020/04/trabajar-desde-casa.jpg",
-                ),
+                image: AssetImage("assets/quiqlickProfessional.jpeg"),
                 fit: BoxFit.cover,
               ),
             ),
           ),
           ListTile(
             leading: Icon(Icons.person_3, size: 30, color: Colors.white),
-            title: Text(
-              "Emprendedor",
+            title: const Text(
+              "Perfil profesional",
               style: TextStyle(color: Colors.white, fontSize: 25),
             ),
             onTap: () {
@@ -50,7 +58,7 @@ class Draw {
           ),
           ListTile(
             leading: Icon(Icons.newspaper, size: 30, color: Colors.white),
-            title: Text(
+            title: const Text(
               "Crear anuncio",
               style: TextStyle(color: Colors.white, fontSize: 25),
             ),
@@ -61,16 +69,42 @@ class Draw {
             },
           ),
           ListTile(
-            leading: Icon(Icons.update_sharp, size: 30, color: Colors.white),
-            title: Text(
-              "Actualizar perfil",
+            leading: Icon(Icons.person_4_sharp, size: 30, color: Colors.white),
+            title: const Text(
+              "Profesionales disponibles",
               style: TextStyle(color: Colors.white, fontSize: 25),
             ),
-            onTap: () async {},
+            onTap: () {
+              if (context.mounted) {
+                Navigator.pop(context);
+
+                showModalBottomSheet(
+                  context: context,
+                  elevation: 20.0,
+                  isDismissible: true,
+                  enableDrag: true,
+                  backgroundColor: Colors.transparent,
+                  builder: (context) => const ShowJob(),
+                );
+              }
+            },
           ),
           ListTile(
+            leading: Icon(Icons.monetization_on, size: 30, color: Colors.white),
+            title: const Text(
+              "Realizar pago",
+              style: TextStyle(color: Colors.white, fontSize: 25),
+            ),
+            onTap: () {
+              if (context.mounted) {
+                Navigator.pushNamed(context, "pay");
+              }
+            },
+          ),
+
+          ListTile(
             leading: Icon(Icons.logout, size: 30, color: Colors.white),
-            title: Text(
+            title: const Text(
               "Cerrar sesión",
               style: TextStyle(color: Colors.white, fontSize: 25),
             ),
@@ -80,13 +114,15 @@ class Draw {
               await Preferences.deletePreferences();
               await PreferencesRegister.deletePreferences();
               await PreferencesName.deletePreferencesName();
+              await PreferencesJob.deletePreferencesJob();
+              await PreferencesCity.deletePreferencesCity();
               SystemNavigator.pop();
             },
           ),
           Expanded(child: SizedBox()),
           Padding(
             padding: const EdgeInsets.all(16.0),
-            child: Text(
+            child: const Text(
               "© Quicklick 2025",
               style: TextStyle(color: Colors.white60, fontSize: 18),
             ),

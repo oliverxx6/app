@@ -8,6 +8,10 @@ plugins {
     id("dev.flutter.flutter-gradle-plugin")
 }
 
+dependencies{
+    implementation("com.google.firebase:firebase-analytics")
+}
+
 android {
     namespace = "com.quicklick.quicklick"
     compileSdk = flutter.compileSdkVersion

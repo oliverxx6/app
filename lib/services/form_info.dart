@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:quicklick/services/crud.dart';
 import 'package:quicklick/services/preferences.dart';
 
@@ -16,29 +17,65 @@ class _PersonalInfoState extends State<PersonalInfo> {
   final TextEditingController _age = TextEditingController();
   final TextEditingController _id = TextEditingController();
   final TextEditingController _phone = TextEditingController();
+  final TextEditingController _recomendation = TextEditingController();
   final Color _color = const Color.fromARGB(221, 29, 29, 29);
   String? _userId;
   String? _email;
+  bool _isSubmitting = false;
 
   @override
   void initState() {
     super.initState();
     _initValues();
-    _name;
-    _lastName;
-    _age;
-    _id;
-    _phone;
   }
 
   Future<void> _initValues() async {
-    _userId = await PreferencesRegister.preferences;
-    _email = await Preferences.preferences;
+    try {
+      _userId = await PreferencesRegister.preferences;
+      _email = await Preferences.preferences;
+
+      if (_userId == null || _email == null) return;
+
+      await Crud.readInfo(_userId!, _email!);
+
+      if (Crud.iddoc.isNotEmpty &&
+          Crud.iddoc[0]["data"] != null &&
+          Crud.iddoc[0]["data"]["Nombre"] != null) {
+        final name = Crud.iddoc[0]["data"]["Nombre"];
+        if (name.isNotEmpty) {
+          WidgetsBinding.instance.addPostFrameCallback((_) => goPage());
+        }
+      }
+    } catch (e) {
+      debugPrint("Error en _initValues: $e");
+    }
   }
 
   void goPage() {
-    if (context.mounted) {
-      Navigator.pushNamedAndRemoveUntil(context, "pages", (route) => false);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (context.mounted) {
+        Navigator.pushNamedAndRemoveUntil(context, "pages", (route) => false);
+      }
+    });
+  }
+
+  Future<void> _submitForm() async {
+    if (_isSubmitting) return;
+    if (_formKey.currentState!.validate()) {
+      _formKey.currentState!.save();
+      setState(() => _isSubmitting = true);
+      await Crud.createCollection(
+        _userId,
+        _email,
+        _name.text,
+        _lastName.text,
+        _age.text,
+        _id.text,
+        _phone.text,
+        _recomendation.text,
+      );
+      if (mounted) setState(() => _isSubmitting = false);
+      goPage();
     }
   }
 
@@ -68,21 +105,16 @@ class _PersonalInfoState extends State<PersonalInfo> {
                 _ageContainer(),
                 _idContainer(),
                 _phoneNumberContainer(),
+                SizedBox(height: 12.0),
+                Text(
+                  "En este recuadro debe agregar a la persona que le recomendo usar esta plataforma",
+                  style: TextStyle(color: Colors.white),
+                ),
+                SizedBox(height: 12.0),
+                _recomendationContainer(),
                 ElevatedButton(
                   onPressed: () async {
-                    if (_formKey.currentState!.validate()) {
-                      _formKey.currentState!.save();
-                      await Crud.createCollection(
-                        _userId,
-                        _email,
-                        _name.text,
-                        _lastName.text,
-                        _age.text,
-                        _id.text,
-                        _phone.text,
-                      );
-                      goPage();
-                    }
+                    await _submitForm();
                   },
                   child: Text(
                     "Registrarse",
@@ -99,6 +131,7 @@ class _PersonalInfoState extends State<PersonalInfo> {
 
   Container _nameContainer() {
     return Container(
+      width: double.infinity,
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(15.0),
@@ -128,6 +161,7 @@ class _PersonalInfoState extends State<PersonalInfo> {
 
   Container _lastNameContainer() {
     return Container(
+      width: double.infinity,
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(15.0),
@@ -157,6 +191,7 @@ class _PersonalInfoState extends State<PersonalInfo> {
 
   Container _ageContainer() {
     return Container(
+      width: double.infinity,
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(15.0),
@@ -166,6 +201,7 @@ class _PersonalInfoState extends State<PersonalInfo> {
       child: TextFormField(
         controller: _age,
         keyboardType: TextInputType.number,
+        inputFormatters: [FilteringTextInputFormatter.digitsOnly],
         maxLength: 2,
         style: TextStyle(fontSize: 20, color: Colors.black),
         decoration: const InputDecoration(
@@ -191,6 +227,7 @@ class _PersonalInfoState extends State<PersonalInfo> {
 
   Container _idContainer() {
     return Container(
+      width: double.infinity,
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(15.0),
@@ -200,6 +237,7 @@ class _PersonalInfoState extends State<PersonalInfo> {
       child: TextFormField(
         controller: _id,
         keyboardType: TextInputType.number,
+        inputFormatters: [FilteringTextInputFormatter.digitsOnly],
         maxLength: 10,
         style: TextStyle(fontSize: 20, color: Colors.black),
         decoration: const InputDecoration(
@@ -225,6 +263,7 @@ class _PersonalInfoState extends State<PersonalInfo> {
 
   Container _phoneNumberContainer() {
     return Container(
+      width: double.infinity,
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(15.0),
@@ -234,6 +273,7 @@ class _PersonalInfoState extends State<PersonalInfo> {
       child: TextFormField(
         controller: _phone,
         keyboardType: TextInputType.number,
+        inputFormatters: [FilteringTextInputFormatter.digitsOnly],
         maxLength: 10,
         style: TextStyle(fontSize: 20, color: Colors.black),
         decoration: const InputDecoration(
@@ -257,6 +297,38 @@ class _PersonalInfoState extends State<PersonalInfo> {
     );
   }
 
+  Container _recomendationContainer() {
+    return Container(
+      width: double.infinity,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(15.0),
+      ),
+      margin: EdgeInsets.all(9.0),
+      padding: EdgeInsets.symmetric(horizontal: 15.0),
+      child: TextFormField(
+        controller: _recomendation,
+        keyboardType: TextInputType.text,
+        maxLength: 10,
+        style: TextStyle(fontSize: 20, color: Colors.black),
+        decoration: const InputDecoration(
+          border: InputBorder.none,
+          icon: Icon(Icons.recommend),
+          hintStyle: TextStyle(fontSize: 15.0, color: Colors.black),
+          hint: Text("Ingrese el nombre del recomendador"),
+          labelStyle: TextStyle(fontSize: 15.0, color: Colors.black),
+          labelText: "Ingrese el nombre del recomendador",
+        ),
+        validator: (String? value) {
+          if (value == null || value.trim().isEmpty) {
+            return "Ingrese el nombre del recomendador";
+          }
+          return null;
+        },
+      ),
+    );
+  }
+
   @override
   void dispose() {
     _name.dispose();
@@ -264,6 +336,7 @@ class _PersonalInfoState extends State<PersonalInfo> {
     _id.dispose();
     _age.dispose();
     _phone.dispose();
+    _recomendation.dispose();
     super.dispose();
   }
 }
