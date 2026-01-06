@@ -16,7 +16,7 @@ class Verification extends StatefulWidget {
   State<Verification> createState() => _Verification();
 }
 
-class _Verification extends State<Verification> {
+class _Verification extends State<Verification> with WidgetsBindingObserver {
   final Color _color = const Color.fromARGB(221, 29, 29, 29);
   String? userId;
   String? email;
@@ -59,7 +59,7 @@ class _Verification extends State<Verification> {
         if (context.mounted) {
           Navigator.pushNamedAndRemoveUntil(
             context,
-            "politics",
+            "inicio1",
             (Route<dynamic> route) => false,
           );
           return;
@@ -71,14 +71,31 @@ class _Verification extends State<Verification> {
           (Route<dynamic> route) => false,
         );
         return;
-      } else if (veri || lastVersion) {
+      } else if (lastVersion) {
         Navigator.pushNamedAndRemoveUntil(
           context,
           "pages",
           (Route<dynamic> route) => false,
         );
-      } else {
-        await AuthService.signInWithGoogle();
+
+        await DialogMethod.updateVersionDialog(context);
+        return;
+      } else if (veri) {
+        bool verify = await AuthService.signInWithGoogle();
+        if (verify == false) {
+          final bool status = await AuthService.checkUserStatus();
+          if (status && context.mounted) {
+            await DialogMethod.showBlockedDialog(context);
+          }
+        } else {
+          if (context.mounted) {
+            Navigator.pushNamedAndRemoveUntil(
+              context,
+              "pages",
+              (Route<dynamic> route) => false,
+            );
+          }
+        }
       }
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-disabled' && context.mounted) {
@@ -102,13 +119,11 @@ class _Verification extends State<Verification> {
           (Route<dynamic> route) => false,
         );
       }
-      e;
+      debugPrint("Errorrrrrrrrrrr $e");
     }
     final bool status = await AuthService.checkUserStatus();
     if (status && context.mounted) {
       await DialogMethod.showBlockedDialog(context);
-    } else if (lastVersion && context.mounted) {
-      await DialogMethod.updateVersionDialog(context);
     }
   }
 
@@ -125,13 +140,19 @@ class _Verification extends State<Verification> {
 
   Future<void> _remoteConfig() async {
     final remoteConfig = FirebaseRemoteConfig.instance;
+
     await remoteConfig.setConfigSettings(
       RemoteConfigSettings(
         fetchTimeout: const Duration(minutes: 1),
         minimumFetchInterval: Duration(hours: 1),
       ),
     );
-    await remoteConfig.fetchAndActivate();
+
+    try {
+      await remoteConfig.fetchAndActivate();
+    } catch (e) {
+      debugPrint("Error al obtener Remote Config: $e");
+    }
 
     final String veripay = remoteConfig.getString("pay");
     final String verificationPay = "verificado";
@@ -140,7 +161,9 @@ class _Verification extends State<Verification> {
     }
 
     final String latestVersion = remoteConfig.getString("last_version");
-    final currentVersion = await getInstalledVersion();
+
+    final String currentVersion = await getInstalledVersion();
+
     if (latestVersion != currentVersion) {
       lastVersion = true;
     }
@@ -155,9 +178,31 @@ class _Verification extends State<Verification> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       _initIsNotWeb();
     });
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      // 👇 Cuando la app vuelve del background
+      _restartApp();
+    }
+  }
+
+  void _restartApp() {
+    Navigator.of(context).pushAndRemoveUntil(
+      MaterialPageRoute(builder: (context) => const Verification()),
+      (Route<dynamic> route) => false,
+    );
   }
 
   @override

@@ -42,22 +42,23 @@ class AuthService {
   }
 
   static Future<bool> checkUserStatus() async {
+    bool very = false;
     try {
       User? user = FirebaseAuth.instance.currentUser;
 
       if (user != null) {
         await user.reload(); // Actualiza el estado del usuario desde Firebase
-        return false;
+        return very;
       }
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-disabled') {
-        return true; // El usuario ha sido deshabilitado
+        very = true; // El usuario ha sido deshabilitado
       }
     } catch (e) {
       if (e.toString().contains("USER_DISABLED")) {
-        return true;
+        very = true;
       }
     }
-    return true;
+    return very;
   }
 }

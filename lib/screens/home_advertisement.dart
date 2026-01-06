@@ -74,7 +74,7 @@ class _HomeAdvertisementState extends State<HomeAdvertisement>
               padding: EdgeInsets.all(16.0),
               child: Text(
                 textAlign: TextAlign.center,
-                "El anuncio creado por usted para buscar un profesional será mostrado en esta pantalla",
+                "Mis anuncios",
                 style: TextStyle(
                   fontSize: 20.0,
                   color: Colors.white,
@@ -221,7 +221,22 @@ class _HomeAdvertisementState extends State<HomeAdvertisement>
                           ),
                         ),
                       ),
-                      Icon(Icons.arrow_forward, color: Colors.red, size: 40.0),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Spacer(),
+                          Icon(
+                            Icons.arrow_forward,
+                            color: Colors.red,
+                            size: 40.0,
+                          ),
+                          SizedBox(width: 20.0),
+                          Text(
+                            "Deslice para borrar",
+                            style: TextStyle(color: Colors.white),
+                          ),
+                        ],
+                      ),
                       Divider(
                         color: Colors.grey.shade400,
                         thickness: 0.8,

@@ -13,48 +13,47 @@ class Politics extends StatefulWidget {
 
 class _PoliticsState extends State<Politics> {
   final String politics = """
-  1. Introducción
-Al utilizar nuestra aplicación (en adelante, "QUIQLIQ"), usted acepta los siguientes Términos y Condiciones de Uso y nuestra Política de Privacidad. Estos documentos rigen su acceso y uso de los servicios proporcionados. Si no está de acuerdo con los términos, no podrá utilizar la App.
+Condiciones de Uso
+- QUIQLIQ es una plataforma que conecta entre clientes, profesionales para ofrecer servicios con un proceso fácil, seguro y formal.  
+- Solo pueden acceder usuarios registrados y miembros verificados mediante un proceso de filtro y recomendación.  
+- Las transacciones y comunicaciones deben realizarse exclusivamente dentro de la plataforma para garantizar seguridad y protección de pagos.  
+- Los profesionales deberán pagar una comisión del 10% por tarea finalizada.  
+- El pago se libera al profesional solo después de la confirmación de la entrega o trabajo completado por el cliente.  
+- Está prohibido operar fuera de la plataforma; hacerlo puede generar bloqueo de cuenta y riesgos de fraude.  
 
-2. Requisitos de edad
-Al registrarse y utilizar la App, usted declara que es mayor de 18 años. Nos reservamos el derecho de eliminar o bloquear el acceso de cualquier usuario que proporcione información falsa sobre su edad.
+Políticas de Seguridad y Privacidad  
+- Todos los miembros pasan filtros rigurosos de verificación para asegurar un entorno confiable.  
+- La plataforma protege la información personal, no mostrando datos sensibles como dirección, número de cuenta o tarjeta.  
+- Se usan procesos de verificación en dos pasos vía email y Whatsapp para proteger contra cuentas falsas y spams.  
+- Todo el historial de comunicaciones y transacciones queda registrado para posibles auditorías y resolución de conflictos.  
+- Se promueve la comunicación en espacios seguros y públicos cuando sea necesario la interacción presencial.  
 
-3. Recopilación y uso de datos personales
-Al utilizar la App, usted acepta proporcionar ciertos datos personales, que incluyen pero no se limitan a:
+Protección de Pagos  
+- Los pagos se retienen en garantía hasta la confirmación de la entrega satisfactoria por parte del cliente.  
+- Si se detecta  el incumplimiento de las labores para las que fue contratado el profesional, el cliente tiene derecho a reembolso completo.  
+- Se aceptan diversos métodos de pago, incluyendo transferencias bancarias y tarjetas.  
 
-Fotografías que usted decida subir a la App.
+Comportamiento y Normas  
+- Se exige un trato respetuoso y prohibición de agresiones, insultos o acoso.  
+- Cualquier violación de normas puede derivar en advertencias y bloqueo de cuenta.  
+- La plataforma no tolera acciones que pongan en riesgo la confianza, como cancelaciones reiteradas o creación de cuentas falsas.  
 
-Información relacionada con su perfil de usuario.
+Soporte y Resolución de Conflictos  
+- QUIQLIQ actúa como mediador en desacuerdos entre clientes y profesionales.  
+- Hay disponibilidad de atención al cliente para resolver incidencias con prioridad.  
+- La plataforma tiene mecanismos de reporte ante solicitudes de pagos o entregas fuera de la plataforma para proteger usuarios.  
 
-Estos datos serán utilizados exclusivamente para los fines establecidos en esta política, como mejorar su experiencia en la App y permitir interacciones entre usuarios.
+Requisitos para usuarios  
+- Ser mayor de edad.  
+- Enviar identificación y planilla de servicios básicos.  
+- Aprobar el filtro para seguridad de todos en la comunidad.  
 
-4. Uso de su imagen
-Al subir fotos a la App, usted otorga a QUIQLIQ una licencia no exclusiva, libre de regalías, transferible y sublicenciable para usar, reproducir, distribuir, y mostrar públicamente dicho contenido dentro de los fines permitidos por la App. Usted declara ser el titular de los derechos de las imágenes compartidos y libera a QUIQLIQ de cualquier responsabilidad derivada de su uso.
+Este resumen refleja las medidas principales para mantener un ambiente seguro, confiable y transparente en la plataforma QUIQLIQ, protegiendo tanto a clientes como a profesionales en todas las fases de contratación, prestación de servicio y pago.
+La inscripción en la aplicación móvil tiene una mínima inversión de USD 10.00 
+Este aporte se destina exclusivamente a financiar las verificaciones del filtro de seguridad, las cuales son fundamentales para garantizar un entorno seguro y confiable para todos los usuarios. Al realizar esta inversión, usted contribuye directamente a mantener la integridad y protección dentro de la plataforma.
 
-5. Propiedad intelectual
-Todos los contenidos de la App, excluyendo los proporcionados por los usuarios, son propiedad de Quicklick y están protegidos por las leyes de propiedad intelectual de Ecuador.
+Para cualquier duda o sugerencia puede escribirnos a los siguientes correos electrónicos: soporte@quiqliq.com, soluciones@quiqliq.com, info@quiqliq.com.
 
-6. Responsabilidad del usuario
-El usuario es el único responsable del contenido que suba a la App. Usted declara que:
-
-Tiene el derecho de compartir las fotos subidas.
-
-No subirá contenido que infrinja derechos de terceros, sea ofensivo o viole las leyes locales.
-
-7. Protección de datos personales
-Cumplimos con las leyes ecuatorianas de protección de datos personales. Sus datos serán tratados de manera confidencial y no serán compartidos con terceros sin su consentimiento, salvo obligación legal.
-
-8. Aceptación de términos
-Al crear una cuenta o utilizar la App, usted acepta estos Términos y Condiciones y declara haber leído y comprendido nuestra Política de Privacidad.
-
-9. Cambios en las políticas
-Nos reservamos el derecho de modificar estas políticas en cualquier momento. Notificaremos cualquier cambio a través de la App. Su uso continuado constituirá aceptación de las modificaciones.
-
-10. Mensaualidad impaga
-En el caso que usted como miembro de la app debera realizar un pago mensaual por el importe de establecido en dólares americanos incluido IVA, el no realizar el pago de manera puntual tendra como consecuencia el que su cuenta sea borrada de la plataforma y el uso de la app móvil sera bloqueado.
-
-11. Contacto
-Si tiene dudas o inquietudes acerca de estas políticas, puede ponerse en contacto con nosotros al correo quiqliq@hotmail.com.
 """;
 
   Future<void> verification(BuildContext context) async {
@@ -125,15 +124,17 @@ Si tiene dudas o inquietudes acerca de estas políticas, puede ponerse en contac
             children: <Widget>[
               Center(
                 child: Text(
-                  "Politicas de uso y privacidad",
+                  textAlign: TextAlign.center,
+                  "Condiciones y Políticas de Uso y Privacidad de QUIQLIQ",
                   style: TextStyle(fontSize: 20, color: Colors.white),
                 ),
               ),
+              SizedBox(height: 10),
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 8.0),
                 child: Text(
                   politics,
-                  style: TextStyle(fontSize: 15, color: Colors.white),
+                  style: TextStyle(fontSize: 18, color: Colors.white),
                 ),
               ),
               OutlinedButton(

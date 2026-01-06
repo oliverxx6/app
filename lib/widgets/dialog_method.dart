@@ -80,25 +80,52 @@ class DialogMethod {
       barrierDismissible: false,
       builder: (context) {
         return SingleChildScrollView(
-          child: AlertDialog(
-            backgroundColor: const Color.fromARGB(255, 27, 26, 26),
-            elevation: 30,
-            content: Image.asset("assets/1024.png"),
-            title: Text(
-              "Para continuar con el uso de la membresia, comuníquese al WhatsApp: 0967256088",
-              style: TextStyle(color: Colors.white),
-            ),
-            actions: [
-              TextButton(
-                onPressed: () async {
-                  SystemNavigator.pop();
-                },
-                child: Text("Salir", style: TextStyle(fontSize: 25)),
+          child: PopScope(
+            canPop: false,
+            child: AlertDialog(
+              backgroundColor: const Color.fromARGB(255, 27, 26, 26),
+              elevation: 30,
+              content: Image.asset("assets/1024.png"),
+              title: Text(
+                "Para continuar con el uso de la membresia, comuníquese al WhatsApp: 0961149999",
+                style: TextStyle(color: Colors.white),
               ),
-            ],
+              actions: [
+                TextButton(
+                  onPressed: () async {
+                    SystemNavigator.pop();
+                  },
+                  child: Text("Salir", style: TextStyle(fontSize: 25)),
+                ),
+              ],
+            ),
           ),
         );
       },
     );
+  }
+
+  static void messageUpload(BuildContext context) {
+    const snackBar = SnackBar(
+      content: Text("Espere mientras se carga su foto"),
+      duration: Duration(seconds: 2),
+    );
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+  }
+
+  static void messageErrors(BuildContext context) {
+    const snackBar = SnackBar(
+      content: Text("Algo salió mal"),
+      duration: Duration(seconds: 2),
+    );
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+  }
+
+  static void messageSucces(BuildContext context) {
+    const snackBar = SnackBar(
+      content: Text("Foto subida con éxito"),
+      duration: Duration(seconds: 2),
+    );
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
 }

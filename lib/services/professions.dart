@@ -1,6 +1,38 @@
 class Professions {
   List<String> city() {
-    List<String> cities = ["Quito", "Cuenca", "Guayaquil", "Loja"];
+    List<String> cities = [
+      "Ambato",
+      "Babahoyo",
+      "Cuenca",
+      "Chone",
+      "Daule",
+      "Durán",
+      "El Carmen",
+      "Esmeraldas",
+      "Guayaquil",
+      "Ibarra",
+      "Isla San Cristobal",
+      "Isla Santa Cruz",
+      "Latacunga",
+      "La Libertad",
+      "Loja",
+      "Machala",
+      "Manta",
+      "Milagro",
+      "Nueva Loja",
+      "Portoviejo",
+      "Puerto López",
+      "Quevedo",
+      "Quito",
+      "Riobamba",
+      "Salinas",
+      "Samborondón",
+      "Sangolquí",
+      "Santa Elena",
+      "Santo Domingo",
+      "Tulcán",
+      "Villamil Playas",
+    ];
     return cities;
   }
 

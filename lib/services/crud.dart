@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 
@@ -36,8 +35,11 @@ class Crud {
       await _connec
           .collection("users")
           .doc(userId)
-          .collection(email!)
-          .add(data);
+          .collection(email!).add(data);
+          //.doc("info")
+          //.set(data, SetOptions(merge: true));
+
+      
       return true;
     } catch (e) {
       e;
@@ -182,7 +184,6 @@ class CrudJob {
     String? description,
     String? value,
     String? location,
-    String? phone,
   ) async {
     try {
       final jobDoc = await _connec.collection("Jobs").doc(job).get();
@@ -199,7 +200,6 @@ class CrudJob {
         "description": description,
         "value": value,
         "location": location,
-        "phone": phone,
       };
       final docRef = await _connec
           .collection("Jobs")
@@ -268,7 +268,10 @@ class CrudProfessional {
     String? email,
     String? profetion,
     String? profession,
+    String url,
+    String fileName,
     String? city,
+    String? sector,
     String? expert,
     String? expertDescription,
     String? phone,
@@ -284,7 +287,10 @@ class CrudProfessional {
       final Map<String, dynamic> data = {
         "Profesion": profetion,
         "ProfesionTwo": profession,
+        "Url": url,
+        "Archivo": fileName,
         "Ciudad": city,
+        "Sector": sector,
         "Experiencia": expert,
         "Descripcion": expertDescription,
         "Celular": phone,
@@ -351,12 +357,18 @@ class Accept {
   static List<dynamic> datas = [];
   static Future<List<dynamic>> getList() async => datas;
   static Future<void> create(
-    String? userIdU,
-    String? emailU,
+    String? emailUsuario,
     String userId,
+    String email,
+    String value,
     int like,
-    int dislike,
+    int quantityJobs,
+    String doc,
+    String location,
+    String job,
     String profesion,
+    String profesioDos,
+    String url,
     String experiencia,
     String descripcion,
     String cell,
@@ -368,12 +380,19 @@ class Accept {
           .doc("aceptadas")
           .set({}); //creo el documento vacio
     }
-    if (userIdU != null && emailU != null) {
+    if (emailUsuario != null) {
       final Map<String, dynamic> data = {
         "userId": userId,
+        "email": email,
+        "pay": value,
         "like": like,
-        "dislike": dislike,
+        "jobs": quantityJobs,
+        "doc": doc,
+        "location": location,
+        "job": job,
         "profesion": profesion,
+        "profesion2": profesioDos,
+        "url": url,
         "experiencia": experiencia,
         "descripcion": descripcion,
         "cell": cell,
@@ -381,25 +400,23 @@ class Accept {
       await _connec
           .collection("users")
           .doc("aceptadas")
-          .collection(emailU)
-          .doc(userIdU)
+          .collection(emailUsuario)
+          .doc(email)
           .set(data, SetOptions(merge: true));
-      //.add(data);
     }
   }
 
-  static Future<void> read(String? userId, String? email) async {
+  static Future<void> read(String? email) async {
     try {
-      if (userId != null && email != null) {
-        final docSnap = await _connec
+      if (email != null) {
+        final querySnap = await _connec
             .collection("users")
             .doc("aceptadas")
             .collection(email)
-            .doc(userId)
             .get();
-        if (docSnap.exists) {
-          datas.clear();
-          datas.add({"idDoc": docSnap.id, "data": docSnap.data()});
+        datas.clear();
+        for (var doc in querySnap.docs) {
+          datas.add({"idDoc": doc.id, "data": doc.data()});
         }
       }
     } catch (e) {
@@ -407,12 +424,12 @@ class Accept {
     }
   }
 
-  static Future<void> delete(String? email, String? userId) async {
+  static Future<void> delete(String? email, String? docId) async {
     await _connec
         .collection("users")
         .doc("aceptadas")
         .collection(email!)
-        .doc(userId)
+        .doc(docId)
         .delete();
   }
 }
@@ -442,7 +459,7 @@ class Like {
         .set({"like": FieldValue.increment(1)}, SetOptions(merge: true));
   }
 
-  static Future<void> dislike(String userId) async {
+  static Future<void> createLikeJob(String userId) async {
     final userDoc = await _connec
         .collection("like")
         .doc(userId)
@@ -462,6 +479,38 @@ class Like {
         .doc(userId)
         .collection("likes")
         .doc("likesD")
-        .set({"dislike": FieldValue.increment(1)}, SetOptions(merge: true));
+        .set({"jobs": FieldValue.increment(1)}, SetOptions(merge: true));
+  }
+}
+
+class Pay {
+  static final FirebaseFirestore _connec = FirebaseFirestore.instance;
+  static Future<void> createPay(String emailU, String value) async {
+    final userDoc = await _connec.collection("pagos").doc(emailU).get();
+    if (!userDoc.exists) {
+      await _connec
+          .collection("pagos")
+          .doc(emailU)
+          .set({}); //creo el documento vacio
+    }
+    await _connec
+        .collection("pagos")
+        .doc(emailU)
+        .collection("receptados")
+        .doc()
+        .set({"cobrado": value});
+  }
+
+  static Future<void> createPayConfirm(String emailU, String confirm) async {
+    final userDoc = await _connec.collection("pagos").doc(emailU).get();
+    if (!userDoc.exists) {
+      await _connec
+          .collection("pagos")
+          .doc(emailU)
+          .set({}); //creo el documento vacio
+    }
+    await _connec.collection("pagos").doc(emailU).set({
+      "recibio_el_pago": confirm,
+    });
   }
 }

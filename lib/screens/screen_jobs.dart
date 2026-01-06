@@ -17,11 +17,15 @@ class _Jobs extends State<Jobs> with AutomaticKeepAliveClientMixin {
   late final Stream<List<Map<String, dynamic>>> _combinedStream;
   bool isReady = false;
   String? _userId;
+  String? _email;
   int? _like;
-  int? _dislike;
+  int? _quantityJobs;
   String? profesion;
+  String? profesionTwo;
+  String? url;
   String? experiencia;
   String? descripcion;
+  String? _sector;
   String? cell;
 
   @override
@@ -34,45 +38,121 @@ class _Jobs extends State<Jobs> with AutomaticKeepAliveClientMixin {
   }
 
   Future<void> initPreferencesAndCrud() async {
+    _userId = await PreferencesRegister.preferences;
+    _email = (await Preferences.preferences)!;
+
+    final doc = await FirebaseFirestore.instance
+        .collection("users")
+        .doc(_userId)
+        .collection(_email!)
+        .doc("profesiones")
+        .collection("profesion")
+        .doc("perfil")
+        .get();
+    if (doc.exists) {
+      setState(() {
+        _sector = doc.data()?["Sector"];
+      });
+      debugPrint("URL cargada correctamente: $_sector");
+    } else {
+      debugPrint("No existe documento perfil");
+    }
     final jobPref = await PreferencesJob.preferencesJobs ?? "prueba";
     final jobPrefTwo = await PreferencesJobTwo.preferencesJobs ?? "prueba";
     final job = jobPref.isEmpty ? "prueba" : jobPref;
-
     final jobTwo = jobPrefTwo.isEmpty ? "prueba" : jobPrefTwo;
     final cityPref = await PreferencesCity.preferencesCities ?? "prueba";
     final city = cityPref.isEmpty ? "prueba" : cityPref;
-    _jobStream = CrudJob.jobStream(job, city);
-    _jobStreamTwo = CrudJob.jobStream(jobTwo, city);
-    _combinedStream = Rx.combineLatest2(
-      _jobStream,
-      _jobStreamTwo,
-      (List<Map<String, dynamic>> a, List<Map<String, dynamic>> b) => [
-        ...a,
-        ...b,
-      ],
-    ); //operador de propagación (...) o spread operator en Dart.
-    _userId = await PreferencesRegister.preferences;
-    String? email = (await Preferences.preferences)!;
-    List likes = await flike(_userId);
-    if (likes.isNotEmpty) {
-      _like = likes[0]["data"]["like"] ?? 0;
-      _dislike = likes[0]["data"]["dislike"] ?? 0;
+    if (job != "prueba" && jobTwo != "prueba" && city != "prueba") {
+      profesion = job;
+      profesionTwo = jobTwo;
+      List<Map<String, dynamic>> professionalList =
+          await CrudProfessional.getProfessionalStream(_userId, _email).first;
+      if (professionalList.isNotEmpty) {
+        url = professionalList[0]["profession"]["Url"];
+        experiencia = professionalList[0]["profession"]?["Experiencia"];
+        descripcion = professionalList[0]["profession"]?["Descripcion"];
+        cell = professionalList[0]["profession"]?["Celular"];
+      }
+      _jobStream = CrudJob.jobStream(job, city);
+      _jobStreamTwo = CrudJob.jobStream(jobTwo, city);
+      _combinedStream = Rx.combineLatest2(
+        _jobStream,
+        _jobStreamTwo,
+        (List<Map<String, dynamic>> a, List<Map<String, dynamic>> b) => [
+          ...a,
+          ...b,
+        ],
+      ); //operador de propagación (...) o spread operator en Dart.
+
+      List likes = await flike(_userId);
+      if (likes.isNotEmpty) {
+        _like = likes[0]["data"]["like"] ?? 0;
+        _quantityJobs = likes[0]["data"]["jobs"] ?? 0;
+      } else {
+        _like = 0;
+        _quantityJobs = 0;
+      }
+
+      setState(() => isReady = true);
     } else {
-      _like = 0;
-      _dislike = 0;
+      List<Map<String, dynamic>> professionalList =
+          await CrudProfessional.getProfessionalStream(_userId, _email).first;
+      if (professionalList.isNotEmpty) {
+        profesion = professionalList[0]["profession"]["Profesion"];
+        profesionTwo = professionalList[0]["profession"]["ProfesionTwo"];
+        String city = professionalList[0]["profession"]["Ciudad"];
+        url = professionalList[0]["profession"]["Url"];
+        experiencia = professionalList[0]["profession"]?["Experiencia"];
+        descripcion = professionalList[0]["profession"]?["Descripcion"];
+        cell = professionalList[0]["profession"]?["Celular"];
+        _jobStream = CrudJob.jobStream(profesion, city);
+        _jobStreamTwo = CrudJob.jobStream(profesionTwo, city);
+        _combinedStream = Rx.combineLatest2(
+          _jobStream,
+          _jobStreamTwo,
+          (List<Map<String, dynamic>> a, List<Map<String, dynamic>> b) => [
+            ...a,
+            ...b,
+          ],
+        ); //operador de propagación (...) o spread operator en Dart.
+        //_userId = await PreferencesRegister.preferences;
+        //_email = (await Preferences.preferences)!;
+        List likes = await flike(_userId);
+        if (likes.isNotEmpty) {
+          _like = likes[0]["data"]["like"] ?? 0;
+          _quantityJobs = likes[0]["data"]["jobs"] ?? 0;
+        } else {
+          _like = 0;
+          _quantityJobs = 0;
+        }
+        setState(() => isReady = true);
+      } else {
+        //profesion = profesionTwo = experiencia = descripcion = cell =
+        //  "No disponible";
+        _jobStream = CrudJob.jobStream(job, city);
+        _jobStreamTwo = CrudJob.jobStream(jobTwo, city);
+        _combinedStream = Rx.combineLatest2(
+          _jobStream,
+          _jobStreamTwo,
+          (List<Map<String, dynamic>> a, List<Map<String, dynamic>> b) => [
+            ...a,
+            ...b,
+          ],
+        ); //operador de propagación (...) o spread operator en Dart.
+        _userId = await PreferencesRegister.preferences;
+        _email = (await Preferences.preferences)!;
+        List likes = await flike(_userId);
+        if (likes.isNotEmpty) {
+          _like = likes[0]["data"]["like"] ?? 0;
+          _quantityJobs = likes[0]["data"]["jobs"] ?? 0;
+        } else {
+          _like = 0;
+          _quantityJobs = 0;
+        }
+        setState(() => isReady = true);
+      }
     }
-    List<Map<String, dynamic>> professionalList =
-        await CrudProfessional.getProfessionalStream(_userId, email).first;
-    if (professionalList.isNotEmpty) {
-      profesion = professionalList[0]["profession"]["Profesion"];
-      profesion = professionalList[0]["profession"]["ProfesionTwo"];
-      experiencia = professionalList[0]["profession"]?["Experiencia"];
-      descripcion = professionalList[0]["profession"]?["Descripcion"];
-      cell = professionalList[0]["profession"]?["Celular"];
-    } else {
-      profesion = experiencia = descripcion = cell = "No disponible";
-    }
-    setState(() => isReady = true);
   }
 
   Future<List> flike(String? userId) async {
@@ -116,7 +196,7 @@ class _Jobs extends State<Jobs> with AutomaticKeepAliveClientMixin {
               padding: EdgeInsets.all(16.0),
               child: Text(
                 textAlign: TextAlign.center,
-                "Aqui podra vesualizar ofertas de trabajo para la profesión indicada por usted en el area de emprendedor",
+                "Entrada de ofertas laborales",
                 style: TextStyle(
                   fontSize: 20.0,
                   color: Colors.white,
@@ -129,15 +209,15 @@ class _Jobs extends State<Jobs> with AutomaticKeepAliveClientMixin {
           return ListView.builder(
             itemCount: snapshot.data!.length,
             itemBuilder: (context, index) {
-              String? userIdU =
-                  snapshot.data[index]["profession"]["userIdUsuario"];
-              String? emailU =
+              String? emailUsuario =
                   snapshot.data[index]["profession"]["emailUsuario"];
+
               String? job = snapshot.data[index]["profession"]["profetion"];
               String? description =
                   snapshot.data[index]["profession"]["description"];
               String? value = snapshot.data[index]["profession"]["value"];
               String? location = snapshot.data[index]["profession"]["location"];
+              String? docNumber = snapshot.data[index]["idDoc"];
               if (snapshot.data == null || snapshot.data.isEmpty) {
                 return Center(
                   child: Column(
@@ -168,7 +248,7 @@ class _Jobs extends State<Jobs> with AutomaticKeepAliveClientMixin {
                       ListTile(
                         title: Text(
                           textAlign: TextAlign.center,
-                          "Busco $job",
+                          "Se solicita $job",
                           style: TextStyle(
                             color: Colors.white,
                             fontWeight: FontWeight.bold,
@@ -198,9 +278,7 @@ class _Jobs extends State<Jobs> with AutomaticKeepAliveClientMixin {
                       context: context,
                       builder: (context) {
                         return AlertDialog(
-                          title: Text(
-                            "¿Desea aceptar esta prupuesta de trabajo?",
-                          ),
+                          title: Text("¿Deseas aceptar el trabajo?"),
                           actions: <TextButton>[
                             TextButton(
                               onPressed: () => Navigator.pop(context, false),
@@ -211,13 +289,20 @@ class _Jobs extends State<Jobs> with AutomaticKeepAliveClientMixin {
                                 if (mounted) {
                                   Navigator.pop(context);
                                 }
-                                Accept.create(
-                                  userIdU,
-                                  emailU,
+
+                                await Accept.create(
+                                  emailUsuario,
                                   _userId!,
+                                  _email!,
+                                  value!,
                                   _like!,
-                                  _dislike!,
+                                  _quantityJobs!,
+                                  docNumber!,
+                                  _sector!,
+                                  job!,
                                   profesion!,
+                                  profesionTwo ?? "",
+                                  url!,
                                   experiencia!,
                                   descripcion!,
                                   cell!,

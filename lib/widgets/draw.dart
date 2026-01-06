@@ -4,6 +4,7 @@ import 'package:quicklick/screens/button_sheet.dart';
 import 'package:quicklick/services/auth.dart';
 import 'package:quicklick/services/crud.dart';
 import 'package:quicklick/services/preferences.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class Draw {
   static Widget draw(
@@ -32,7 +33,7 @@ class Draw {
               email,
               style: TextStyle(
                 color: Color.fromARGB(255, 5, 19, 216),
-                fontSize: 25,
+                fontSize: 16,
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -47,7 +48,7 @@ class Draw {
           ListTile(
             leading: Icon(Icons.person_3, size: 30, color: Colors.white),
             title: const Text(
-              "Perfil profesional",
+              "Mi Perfil Profesional",
               style: TextStyle(color: Colors.white, fontSize: 25),
             ),
             onTap: () {
@@ -56,10 +57,11 @@ class Draw {
               }
             },
           ),
+          Divider(thickness: 0.5),
           ListTile(
             leading: Icon(Icons.newspaper, size: 30, color: Colors.white),
             title: const Text(
-              "Crear anuncio",
+              "Contratar un Servicio",
               style: TextStyle(color: Colors.white, fontSize: 25),
             ),
             onTap: () {
@@ -68,31 +70,35 @@ class Draw {
               }
             },
           ),
+          Divider(thickness: 0.5),
           ListTile(
             leading: Icon(Icons.person_4_sharp, size: 30, color: Colors.white),
             title: const Text(
-              "Profesionales disponibles",
+              "Propuestas Aceptadas",
               style: TextStyle(color: Colors.white, fontSize: 25),
             ),
-            onTap: () {
+            onTap: () async {
               if (context.mounted) {
                 Navigator.pop(context);
-
-                showModalBottomSheet(
-                  context: context,
-                  elevation: 20.0,
-                  isDismissible: true,
-                  enableDrag: true,
-                  backgroundColor: Colors.transparent,
-                  builder: (context) => const ShowJob(),
-                );
+                await Accept.read(email);
+                if (context.mounted) {
+                  showModalBottomSheet(
+                    context: context,
+                    elevation: 20.0,
+                    isDismissible: true,
+                    enableDrag: true,
+                    backgroundColor: Colors.transparent,
+                    builder: (context) => const ShowJob(stateSelection: false),
+                  );
+                }
               }
             },
           ),
+          Divider(thickness: 0.5),
           ListTile(
-            leading: Icon(Icons.monetization_on, size: 30, color: Colors.white),
+            leading: Icon(Icons.space_dashboard, size: 30, color: Colors.white),
             title: const Text(
-              "Realizar pago",
+              "Servicios Especiales",
               style: TextStyle(color: Colors.white, fontSize: 25),
             ),
             onTap: () {
@@ -101,29 +107,61 @@ class Draw {
               }
             },
           ),
-
+          Divider(thickness: 0.5),
           ListTile(
-            leading: Icon(Icons.logout, size: 30, color: Colors.white),
+            leading: Icon(
+              Icons.support_agent_sharp,
+              size: 30,
+              color: Colors.white,
+            ),
             title: const Text(
-              "Cerrar sesión",
+              "Soporte",
               style: TextStyle(color: Colors.white, fontSize: 25),
             ),
             onTap: () async {
-              await Crud.deleteInfo(userId, email, idDoc);
+              String number = "0961149999";
+              String phoneNumber = number.startsWith("0")
+                  ? "593${number.substring(1)}"
+                  : number;
+              String message = "Hola, deseo contar con soporte";
+              Uri url = Uri.parse(
+                "https://wa.me/$phoneNumber/?text=${Uri.encodeComponent(message)}",
+              );
+              if (await canLaunchUrl(url)) {
+                await launchUrl(url, mode: LaunchMode.externalApplication);
+              } else {
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text("No fue posible abrir whatsapp")),
+                  );
+                }
+              }
+            },
+          ),
+          Divider(thickness: 0.5),
+          ListTile(
+            leading: Icon(Icons.logout, size: 30, color: Colors.white),
+            title: const Text(
+              "Cerrar Sesión",
+              style: TextStyle(color: Colors.white, fontSize: 25),
+            ),
+            onTap: () async {
               await AuthService.signOut();
               await Preferences.deletePreferences();
               await PreferencesRegister.deletePreferences();
               await PreferencesName.deletePreferencesName();
               await PreferencesJob.deletePreferencesJob();
+              await PreferencesJobTwo.deletePreferencesJob();
               await PreferencesCity.deletePreferencesCity();
+
               SystemNavigator.pop();
             },
           ),
-          Expanded(child: SizedBox()),
+          Spacer(),
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: const Text(
-              "© Quicklick 2025",
+              "Patrocinado por Marshall Bank",
               style: TextStyle(color: Colors.white60, fontSize: 18),
             ),
           ),

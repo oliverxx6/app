@@ -22,8 +22,7 @@ class _FormAdvertisement extends State<FormAdvertisement> {
   late final TextEditingController _profetional;
   final TextEditingController _description = TextEditingController();
   final TextEditingController _value = TextEditingController();
-  late TextEditingController _location = TextEditingController();
-  final TextEditingController _phone = TextEditingController();
+  late final TextEditingController _location;
   bool _isSubmitting = false;
   String? _userId;
   String? _email;
@@ -34,9 +33,11 @@ class _FormAdvertisement extends State<FormAdvertisement> {
     _description;
     _value;
     _location = widget.cityController;
-    _phone;
+    //_location = widget.cityController;
+    //_phone;
     _initUserId();
     _profetional = widget.profetionalController;
+    //_profetional = widget.profetionalController;
   }
 
   Future<void> _initUserId() async {
@@ -51,17 +52,16 @@ class _FormAdvertisement extends State<FormAdvertisement> {
       child: SingleChildScrollView(
         child: Column(
           children: <Widget>[
-            _profetionContainer(),
+            //_profetionContainer(),
             _descriptions(),
             _valueJob(),
-            _locationJob(),
-            _phoneContainer(),
+            //_locationJob(),
+            //_phoneContainer(),
             ElevatedButton(
               onPressed: () async {
                 if (_isSubmitting) return;
                 if (_formKey.currentState!.validate()) {
                   _formKey.currentState!.save();
-
                   if (_profetional.text.isEmpty ||
                       _description.text.isEmpty ||
                       _value.text.isEmpty ||
@@ -85,7 +85,6 @@ class _FormAdvertisement extends State<FormAdvertisement> {
                       _description.text,
                       _value.text,
                       _location.text,
-                      _phone.text,
                     );
                   } catch (e) {
                     if (context.mounted) {
@@ -114,38 +113,6 @@ class _FormAdvertisement extends State<FormAdvertisement> {
     );
   }
 
-  Container _profetionContainer() {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(15.0),
-      ),
-      margin: EdgeInsets.all(9.0),
-      padding: EdgeInsets.symmetric(horizontal: 15.0),
-      child: TextFormField(
-        controller: _profetional,
-        readOnly: true,
-        enableInteractiveSelection: false,
-        focusNode: FocusNode(canRequestFocus: false),
-        keyboardType: TextInputType.text,
-        style: TextStyle(fontSize: 20, color: Colors.black),
-        decoration: const InputDecoration(
-          border: InputBorder.none,
-          icon: Icon(Icons.work),
-          hintStyle: TextStyle(fontSize: 15.0, color: Colors.black),
-          hint: Text("Aquí se mostrará su profesión"),
-          labelStyle: TextStyle(fontSize: 15.0, color: Colors.black),
-          labelText: "Aquí se mostrará su profesión",
-        ),
-        validator: (String? value) {
-          return value != null && value.isEmpty
-              ? "Elcampo no puede estar vacío"
-              : null;
-        },
-      ),
-    );
-  }
-
   Container _descriptions() {
     return Container(
       decoration: BoxDecoration(
@@ -162,9 +129,9 @@ class _FormAdvertisement extends State<FormAdvertisement> {
           border: InputBorder.none,
           icon: Icon(Icons.description),
           hintStyle: TextStyle(fontSize: 15.0, color: Colors.black),
-          hint: Text("¿Qué deseas que el profesional realice?"),
+          hint: Text("Se especifico en lo que solicitas"),
           labelStyle: TextStyle(fontSize: 15.0, color: Colors.black),
-          labelText: "¿Qué deseas que el profesional realice?",
+          labelText: "¿Detalla lo que el profesional debe relizar?",
         ),
         validator: (String? value) {
           return value != null && value.isEmpty
@@ -193,7 +160,7 @@ class _FormAdvertisement extends State<FormAdvertisement> {
           border: InputBorder.none,
           icon: Icon(Icons.monetization_on_sharp),
           hintStyle: TextStyle(fontSize: 15.0, color: Colors.black),
-          hint: Text("¿Cuál es tu presupuesto?"),
+          hint: Text("Agrega un valor razonable"),
           labelStyle: TextStyle(fontSize: 15.0, color: Colors.black),
           labelText: "¿Cuál es tu presupuesto?",
         ),
@@ -206,82 +173,12 @@ class _FormAdvertisement extends State<FormAdvertisement> {
     );
   }
 
-  Container _locationJob() {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(15.0),
-      ),
-      margin: EdgeInsets.all(9.0),
-      padding: EdgeInsets.symmetric(horizontal: 15.0),
-      child: TextFormField(
-        controller: _location,
-        readOnly: true,
-        enableInteractiveSelection: false,
-        focusNode: FocusNode(canRequestFocus: false),
-        keyboardType: TextInputType.text,
-        style: TextStyle(fontSize: 20, color: Colors.black),
-        decoration: const InputDecoration(
-          border: InputBorder.none,
-          icon: Icon(Icons.location_on),
-          hintStyle: TextStyle(fontSize: 15.0, color: Colors.black),
-          hint: Text("Sector para el que necesita el servicio"),
-          labelStyle: TextStyle(fontSize: 15.0, color: Colors.black),
-          labelText: "Ingrese su sector",
-        ),
-        validator: (String? value) {
-          return value != null && value.isEmpty
-              ? "Elcampo no puede estar vacío"
-              : null;
-        },
-      ),
-    );
-  }
-
-  Container _phoneContainer() {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(15.0),
-      ),
-      margin: EdgeInsets.all(9.0),
-      padding: EdgeInsets.symmetric(horizontal: 15.0),
-      child: TextFormField(
-        controller: _phone,
-        keyboardType: TextInputType.phone,
-        maxLength: 10,
-        inputFormatters: [
-          FilteringTextInputFormatter.digitsOnly, // Solo números
-          LengthLimitingTextInputFormatter(10), // Máximo 10 dígitos
-        ],
-        style: TextStyle(fontSize: 20, color: Colors.black),
-        decoration: const InputDecoration(
-          border: InputBorder.none,
-          icon: Icon(Icons.phone_android),
-          hintStyle: TextStyle(fontSize: 15.0, color: Colors.black),
-          hint: Text("Ingrese se número de Whatsapp"),
-          labelStyle: TextStyle(fontSize: 15.0, color: Colors.black),
-          labelText: "Ingrese su número de Whatsapp",
-        ),
-        validator: (String? value) {
-          if (value == null || value.isEmpty) {
-            return "El campo no puede estar vacío";
-          }
-          if (value.length != 10) {
-            return "Debe ingresar exactamente 10 dígitos";
-          }
-          return null;
-        },
-      ),
-    );
-  }
-
   @override
   void dispose() {
     _description.dispose();
     _value.dispose();
     _location.dispose();
-    _phone.dispose();
+    //_phone.dispose();
     super.dispose();
   }
 }

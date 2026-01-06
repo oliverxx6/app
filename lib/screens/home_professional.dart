@@ -15,6 +15,7 @@ class HomeProfessionalState extends State<HomeProfessional>
   late Stream<List<Map<String, dynamic>>> _professionalStream;
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   late TextEditingController _cityController;
+  late TextEditingController _sectorController;
   late Professions _professions;
   String? cities;
   bool isReady = false;
@@ -22,10 +23,13 @@ class HomeProfessionalState extends State<HomeProfessional>
   String? _email;
   String? profession;
   String? professionTwo;
+  String? url;
+  String? fileName;
   String? expert;
   String? description;
   String? cell;
   String? city;
+  String? sector;
 
   @override
   bool get wantKeepAlive => true;
@@ -34,7 +38,8 @@ class HomeProfessionalState extends State<HomeProfessional>
   void initState() {
     super.initState();
     initAll();
-    _cityController = TextEditingController();
+    _cityController = TextEditingController(text: city);
+    _sectorController = TextEditingController(text: sector);
     _professions = Professions();
   }
 
@@ -53,6 +58,34 @@ class HomeProfessionalState extends State<HomeProfessional>
         isReady = true;
       });
     }
+  }
+
+  Container _sectorContainer() {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(15.0),
+      ),
+      margin: EdgeInsets.all(9.0),
+      padding: EdgeInsets.symmetric(horizontal: 15.0),
+      child: TextFormField(
+        controller: _sectorController,
+        keyboardType: TextInputType.text,
+
+        style: TextStyle(fontSize: 20, color: Colors.black),
+        decoration: const InputDecoration(
+          border: InputBorder.none,
+          icon: Icon(Icons.description),
+          hintStyle: TextStyle(fontSize: 15.0, color: Colors.black),
+
+          labelStyle: TextStyle(fontSize: 15.0, color: Colors.black),
+          labelText: "Actualiza tu sector de residencia",
+        ),
+        validator: (String? value) {
+          return null;
+        },
+      ),
+    );
   }
 
   @override
@@ -81,7 +114,7 @@ class HomeProfessionalState extends State<HomeProfessional>
                   padding: EdgeInsets.all(16.0),
                   child: Text(
                     textAlign: TextAlign.center,
-                    "Aquí se mostraran sus datos profesionales",
+                    "Mi perfil profesional",
                     style: TextStyle(
                       fontSize: 20.0,
                       color: Colors.white,
@@ -94,15 +127,19 @@ class HomeProfessionalState extends State<HomeProfessional>
               final dynamic firstItem = snapshot.data[0];
               profession = firstItem?["profession"]?["Profesion"];
               professionTwo = firstItem?["profession"]?["ProfesionTwo"];
+              url = firstItem?["profession"]?["Url"];
+              fileName = firstItem?["profession"]?["Archivo"];
               expert = firstItem?["profession"]?["Experiencia"];
               description = firstItem?["profession"]?["Descripcion"];
               city = firstItem?["profession"]?["Ciudad"];
+              sector = firstItem?["profession"]?["Sector"];
               cell = firstItem?["profession"]?["Celular"];
               if (profession == null ||
                   expert == null ||
                   description == null ||
                   cell == null ||
-                  city == null) {
+                  city == null ||
+                  sector == null) {
                 return const Center(child: Text("Datos incompletos"));
               }
               return Padding(
@@ -119,13 +156,29 @@ class HomeProfessionalState extends State<HomeProfessional>
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          Icon(Icons.person, color: Colors.white, size: 250.0),
+                          Center(
+                            child: ClipOval(
+                              child: Image.network(
+                                url!,
+                                height: 250,
+                                width: 250,
+                                fit: BoxFit.cover,
+                                errorBuilder: (context, error, stackTrace) {
+                                  return Icon(
+                                    Icons.person,
+                                    size: 200,
+                                    color: Colors.grey,
+                                  );
+                                },
+                              ),
+                            ),
+                          ),
                           DropdownButton<String>(
                             isExpanded: true,
                             dropdownColor: Colors.black87,
                             value: cities,
                             hint: Text(
-                              "Elige una opción",
+                              "Actualice su ciudad",
                               style: TextStyle(
                                 color: Colors.white,
                                 fontWeight: FontWeight.bold,
@@ -151,6 +204,8 @@ class HomeProfessionalState extends State<HomeProfessional>
                               _cityController.text = newValue ?? "Sin elección";
                             }),
                           ),
+                          SizedBox(height: 12),
+                          _sectorContainer(),
                           SizedBox(height: 12),
                           Text(
                             textAlign: TextAlign.left,
@@ -212,7 +267,17 @@ class HomeProfessionalState extends State<HomeProfessional>
                             ),
                           ),
                           SizedBox(height: 10.0),
-                          _cityContainer(),
+                          Text(
+                            textAlign: TextAlign.justify,
+                            "Sector: $sector",
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 18.0,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          SizedBox(height: 10.0),
+                          //_cityContainer(),
                           SizedBox(height: 10.0),
                           ElevatedButton(
                             /////boton de actualizacion de ciudad///////
@@ -225,7 +290,10 @@ class HomeProfessionalState extends State<HomeProfessional>
                                   _email,
                                   profession,
                                   professionTwo,
+                                  url!,
+                                  fileName!,
                                   _cityController.text,
+                                  _sectorController.text,
                                   expert,
                                   description,
                                   cell,
@@ -251,7 +319,7 @@ class HomeProfessionalState extends State<HomeProfessional>
                               }
                             },
                             child: Text(
-                              "Actualizar ciudad",
+                              "Actualizar ciudad y sector",
                               style: TextStyle(
                                 fontSize: 20.0,
                                 color: Colors.grey,
@@ -272,6 +340,7 @@ class HomeProfessionalState extends State<HomeProfessional>
     );
   }
 
+  /*
   Container _cityContainer() {
     return Container(
       decoration: BoxDecoration(
@@ -303,4 +372,5 @@ class HomeProfessionalState extends State<HomeProfessional>
       ),
     );
   }
+  */
 }

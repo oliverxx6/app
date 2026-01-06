@@ -8,11 +8,16 @@ class ProfessionalInfo extends StatefulWidget {
   final TextEditingController professionalController;
   final TextEditingController professionalControllerTwo;
   final TextEditingController cityController;
+  final String url;
+  final String fileName;
+
   const ProfessionalInfo({
     super.key,
     required this.professionalController,
     required this.professionalControllerTwo,
     required this.cityController,
+    required this.url,
+    required this.fileName,
   });
 
   @override
@@ -25,6 +30,7 @@ class _ProfessionalInfo extends State<ProfessionalInfo> {
   late final TextEditingController _professionalTwo;
   late final TextEditingController _city;
   final TextEditingController _exper = TextEditingController();
+  final TextEditingController _sector = TextEditingController();
   final TextEditingController _descriptionExper = TextEditingController();
   final TextEditingController _phoneNumber = TextEditingController();
   String? _userId;
@@ -54,12 +60,12 @@ class _ProfessionalInfo extends State<ProfessionalInfo> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Icon(Icons.work_sharp, color: Colors.white, size: 150),
-            _professionContainer(),
-            _professionContainerTwo(),
-            _cityContainer(),
+            //_professionContainer(),
+            //_professionContainerTwo(),
+            //_cityContainer(),
             _yearsProfetionContainer(),
             _descriptionContainer(),
+            _sectorContainer(),
             _phoneNumberContainer(),
             ElevatedButton(
               /////boton de creacion de perfil///////
@@ -74,8 +80,13 @@ class _ProfessionalInfo extends State<ProfessionalInfo> {
                     _userId,
                     _email,
                     _professional.text,
-                    _professionalTwo.text,
+                    _professionalTwo.text.isNotEmpty
+                        ? _professionalTwo.text
+                        : null,
+                    widget.url,
+                    widget.fileName,
                     _city.text,
+                    _sector.text,
                     _exper.text,
                     _descriptionExper.text,
                     _phoneNumber.text,
@@ -84,7 +95,11 @@ class _ProfessionalInfo extends State<ProfessionalInfo> {
                   await PreferencesJobTwo.deletePreferencesJob();
                   await PreferencesCity.deletePreferencesCity();
                   await PreferencesJob.setJob(_professional.text);
-                  await PreferencesJobTwo.setJob(_professionalTwo.text);
+                  if (_professionalTwo.text.isNotEmpty) {
+                    // 👈 solo si hay valor
+                    await PreferencesJobTwo.setJob(_professionalTwo.text);
+                  }
+
                   await PreferencesCity.setCity(_city.text);
 
                   final token = await FirebaseMessaging.instance.getToken();
@@ -115,6 +130,7 @@ class _ProfessionalInfo extends State<ProfessionalInfo> {
     );
   }
 
+  /*
   Container _professionContainer() {
     return Container(
       decoration: BoxDecoration(
@@ -134,9 +150,9 @@ class _ProfessionalInfo extends State<ProfessionalInfo> {
           border: InputBorder.none,
           icon: Icon(Icons.work),
           hintStyle: TextStyle(fontSize: 15.0, color: Colors.black),
-          hint: Text("Aquí se mostrará su profesión"),
+          hint: Text("Tu profesión o actividad loboral"),
           labelStyle: TextStyle(fontSize: 15.0, color: Colors.black),
-          labelText: "Aquí se mostrará su profesión",
+          labelText: "Tu profesión o actividad loboral",
         ),
         validator: (String? value) {
           return value != null && value.isEmpty
@@ -166,9 +182,9 @@ class _ProfessionalInfo extends State<ProfessionalInfo> {
           border: InputBorder.none,
           icon: Icon(Icons.work),
           hintStyle: TextStyle(fontSize: 15.0, color: Colors.black),
-          hint: Text("Aquí se mostrará su segunda profesión"),
+          hint: Text("Tu profesión 2 (Opcional)"),
           labelStyle: TextStyle(fontSize: 15.0, color: Colors.black),
-          labelText: "Aquí se mostrará su segunda profesión",
+          labelText: "Tu profesión 2 (Opcional)",
         ),
         validator: (String? value) {
           return value != null && value.isEmpty
@@ -198,9 +214,9 @@ class _ProfessionalInfo extends State<ProfessionalInfo> {
           border: InputBorder.none,
           icon: Icon(Icons.location_city),
           hintStyle: TextStyle(fontSize: 15.0, color: Colors.black),
-          hint: Text("Aquí se mostrará su ciudad"),
+          hint: Text("Tu ciudad de residencia"),
           labelStyle: TextStyle(fontSize: 15.0, color: Colors.black),
-          labelText: "Aquí se mostrará su ciudad",
+          labelText: "Tu ciudad de residencia",
         ),
         validator: (String? value) {
           return value != null && value.isEmpty
@@ -210,7 +226,7 @@ class _ProfessionalInfo extends State<ProfessionalInfo> {
       ),
     );
   }
-
+*/
   Container _yearsProfetionContainer() {
     return Container(
       decoration: BoxDecoration(
@@ -229,9 +245,8 @@ class _ProfessionalInfo extends State<ProfessionalInfo> {
           border: InputBorder.none,
           icon: Icon(Icons.date_range_sharp),
           hintStyle: TextStyle(fontSize: 15.0, color: Colors.black),
-          hint: Text("Ingrese su años de experiencia"),
           labelStyle: TextStyle(fontSize: 15.0, color: Colors.black),
-          labelText: "Ingrese su años de experiencia",
+          labelText: "Años de experiencia",
         ),
         validator: (String? value) {
           if (value == null || value.trim().isEmpty) {
@@ -254,14 +269,45 @@ class _ProfessionalInfo extends State<ProfessionalInfo> {
       child: TextFormField(
         controller: _descriptionExper,
         keyboardType: TextInputType.text,
+
         style: TextStyle(fontSize: 20, color: Colors.black),
         decoration: const InputDecoration(
           border: InputBorder.none,
           icon: Icon(Icons.description),
           hintStyle: TextStyle(fontSize: 15.0, color: Colors.black),
-          hint: Text("Ingrese una descripción de su experiencia laboral"),
+          hint: Text("No agregue su número de contacto"),
           labelStyle: TextStyle(fontSize: 15.0, color: Colors.black),
-          labelText: "Ingrese una descripción de su experiencia laboral",
+          labelText: "Describe tu experiencia",
+        ),
+        validator: (String? value) {
+          return value != null && value.isEmpty
+              ? "Elcampo no puede estar vacío"
+              : null;
+        },
+      ),
+    );
+  }
+
+  Container _sectorContainer() {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(15.0),
+      ),
+      margin: EdgeInsets.all(9.0),
+      padding: EdgeInsets.symmetric(horizontal: 15.0),
+      child: TextFormField(
+        controller: _sector,
+        keyboardType: TextInputType.text,
+
+        style: TextStyle(fontSize: 20, color: Colors.black),
+        decoration: const InputDecoration(
+          border: InputBorder.none,
+          icon: Icon(Icons.description),
+          hintStyle: TextStyle(fontSize: 15.0, color: Colors.black),
+
+          labelStyle: TextStyle(fontSize: 15.0, color: Colors.black),
+          labelText: "Agrega tu sector de residencia",
         ),
         validator: (String? value) {
           return value != null && value.isEmpty
@@ -290,9 +336,9 @@ class _ProfessionalInfo extends State<ProfessionalInfo> {
           border: InputBorder.none,
           icon: Icon(Icons.phone_android),
           hintStyle: TextStyle(fontSize: 15.0, color: Colors.black),
-          hint: Text("Ingrese su número celular"),
+          hint: Text("Agegue un número válido"),
           labelStyle: TextStyle(fontSize: 15.0, color: Colors.black),
-          labelText: "Ingrese su número de celular",
+          labelText: "Número de contacto",
         ),
         validator: (String? value) {
           if (value == null || value.trim().isEmpty) {

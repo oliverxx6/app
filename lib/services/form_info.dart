@@ -19,6 +19,7 @@ class _PersonalInfoState extends State<PersonalInfo> {
   final TextEditingController _phone = TextEditingController();
   final TextEditingController _recomendation = TextEditingController();
   final Color _color = const Color.fromARGB(221, 29, 29, 29);
+  //late Stream<List<Map<String, dynamic>>> _professionalStream;
   String? _userId;
   String? _email;
   bool _isSubmitting = false;
@@ -42,6 +43,20 @@ class _PersonalInfoState extends State<PersonalInfo> {
           Crud.iddoc[0]["data"] != null &&
           Crud.iddoc[0]["data"]["Nombre"] != null) {
         final name = Crud.iddoc[0]["data"]["Nombre"];
+        List<Map<String, dynamic>> professionalList =
+            await CrudProfessional.getProfessionalStream(_userId, _email).first;
+        if (professionalList.isNotEmpty) {
+          String profesion = professionalList[0]["profession"]["Profesion"];
+          String profesionTwo =
+              professionalList[0]["profession"]["ProfesionTwo"];
+          String city = professionalList[0]["profession"]["Ciudad"];
+          await PreferencesJob.deletePreferencesJob();
+          await PreferencesJobTwo.deletePreferencesJob();
+          await PreferencesCity.deletePreferencesCity();
+          await PreferencesJob.setJob(profesion);
+          await PreferencesJobTwo.setJob(profesionTwo);
+          await PreferencesCity.setCity(city);
+        }
         if (name.isNotEmpty) {
           WidgetsBinding.instance.addPostFrameCallback((_) => goPage());
         }
@@ -106,12 +121,13 @@ class _PersonalInfoState extends State<PersonalInfo> {
                 _idContainer(),
                 _phoneNumberContainer(),
                 SizedBox(height: 12.0),
-                Text(
-                  "En este recuadro debe agregar a la persona que le recomendo usar esta plataforma",
-                  style: TextStyle(color: Colors.white),
-                ),
+
                 SizedBox(height: 12.0),
                 _recomendationContainer(),
+                Text(
+                  "Recuerda que todos los datos serán verificados",
+                  style: TextStyle(color: Colors.white),
+                ),
                 ElevatedButton(
                   onPressed: () async {
                     await _submitForm();
@@ -146,9 +162,9 @@ class _PersonalInfoState extends State<PersonalInfo> {
           border: InputBorder.none,
           icon: Icon(Icons.person),
           hintStyle: TextStyle(fontSize: 15.0, color: Colors.black),
-          hint: Text("Ingrese su nombre"),
+
           labelStyle: TextStyle(fontSize: 15.0, color: Colors.black),
-          labelText: "Ingrese su nombre",
+          labelText: "Ingrese sus nombres",
         ),
         validator: (String? value) {
           return value != null && value.isEmpty
@@ -176,9 +192,8 @@ class _PersonalInfoState extends State<PersonalInfo> {
           border: InputBorder.none,
           icon: Icon(Icons.person),
           hintStyle: TextStyle(fontSize: 15.0, color: Colors.black),
-          hint: Text("Ingrese su apellido"),
           labelStyle: TextStyle(fontSize: 15.0, color: Colors.black),
-          labelText: "Ingrese su apellido",
+          labelText: "Ingrese sus apellidos",
         ),
         validator: (String? value) {
           return value != null && value.isEmpty
@@ -309,7 +324,6 @@ class _PersonalInfoState extends State<PersonalInfo> {
       child: TextFormField(
         controller: _recomendation,
         keyboardType: TextInputType.text,
-        maxLength: 10,
         style: TextStyle(fontSize: 20, color: Colors.black),
         decoration: const InputDecoration(
           border: InputBorder.none,

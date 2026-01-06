@@ -5,6 +5,8 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:quicklick/firebase_options.dart';
 import 'package:quicklick/screens/advertisement.dart';
+import 'package:quicklick/screens/inicio_1.dart';
+import 'package:quicklick/screens/inicio_2.dart';
 import 'package:quicklick/screens/internet.dart';
 import 'package:quicklick/screens/pages.dart';
 import 'package:quicklick/screens/pay.dart';
@@ -15,6 +17,7 @@ import 'package:quicklick/screens/veriffication.dart';
 import 'package:quicklick/services/form_info.dart';
 import 'package:quicklick/services/preferences.dart';
 
+//NOTA RECORDAR MAS ADELANTE CREAR UN CONTADOR DE USUARIOS EN LINEA Y GPS DE UBICACION
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
@@ -25,7 +28,10 @@ void main() async {
   await PreferencesCity.initPreferencesCity();
   await PreferencesJobTwo.initPreferencesJob();
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
-  runApp(const MyApp());
+  // Capturamos el mensaje inicial si la app estaba terminada
+  RemoteMessage? initialMessage = await FirebaseMessaging.instance
+      .getInitialMessage();
+  runApp(MyApp(initialMessage: initialMessage));
 }
 
 @pragma('vm:entry-point')
@@ -36,7 +42,8 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 }
 
 class MyApp extends StatefulWidget {
-  const MyApp({super.key});
+  final RemoteMessage? initialMessage;
+  const MyApp({super.key, this.initialMessage});
 
   @override
   State<MyApp> createState() => _MyAppState();
@@ -46,6 +53,7 @@ class _MyAppState extends State<MyApp> {
   final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
   StreamSubscription<String>? _tokenSubscription;
   bool _isListenerRegistered = false;
+  String _initialRoute = "/";
 
   Future<void> initFCMToken() async {
     await FirebaseMessaging.instance.requestPermission(
@@ -62,19 +70,7 @@ class _MyAppState extends State<MyApp> {
   }
 
   Future<void> setupInteractedMessage() async {
-    // Get any messages which caused the application to open from
-    // a terminated state.
-    RemoteMessage? initialMessage = await FirebaseMessaging.instance
-        .getInitialMessage();
-
-    // If the message also contains a data property with a "type" of "chat",
-    // navigate to a chat screen
-    if (initialMessage != null) {
-      _handleMessage(initialMessage);
-    }
-
-    // Also handle any interaction when the app is in the background via a
-    // Stream listener
+    // Manejo de mensajes cuando la app está en background
     if (!_isListenerRegistered) {
       FirebaseMessaging.onMessageOpenedApp.listen(_handleMessage);
       _isListenerRegistered = true;
@@ -82,7 +78,11 @@ class _MyAppState extends State<MyApp> {
   }
 
   void _handleMessage(RemoteMessage message) {
-    navigatorKey.currentState?.pushNamed('pageJob');
+    navigatorKey.currentState?.pushReplacement(
+      MaterialPageRoute(
+        builder: (_) => const Pages(initialIndex: 2),
+      ), // 👈 Jobs tab
+    );
   }
 
   Future<void> listenFCMTokenRefresh() async {
@@ -102,6 +102,10 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
+    if (widget.initialMessage != null) {
+      // Si la notificación pide ir directo a Jobs
+      _initialRoute = "pages";
+    }
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       await initFCMToken();
       await listenFCMTokenRefresh();
@@ -115,15 +119,18 @@ class _MyAppState extends State<MyApp> {
       navigatorKey: navigatorKey,
       debugShowCheckedModeBanner: false,
       title: "Quicklick",
-      initialRoute: "/",
+      initialRoute: _initialRoute,
       routes: {
         "anuncios": (BuildContext context) => const Anuncios(),
         "professional": (BuildContext context) => const Professional(),
         "personalInfo": (BuildContext context) => const PersonalInfo(),
-        "pages": (BuildContext context) => const Pages(),
+        "pages": (BuildContext context) =>
+            Pages(initialIndex: widget.initialMessage != null ? 2 : 0),
         "internet": (BuildContext context) => const Internet(),
         "/": (BuildContext context) => const Verification(),
         "politics": (BuildContext context) => const Politics(),
+        "inicio1": (BuildContext context) => const Inicio1(),
+        "inicio2": (BuildContext context) => const Inicio2(),
         "pageJob": (BuildContext context) => const Jobs(),
         "pay": (BuildContext context) => const Pay(),
       },

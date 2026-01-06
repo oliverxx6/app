@@ -13,40 +13,17 @@ class _Anuncios extends State<Anuncios> {
   final Color _color = const Color.fromARGB(221, 29, 29, 29);
   final TextEditingController _jobController = TextEditingController();
   final TextEditingController _city = TextEditingController();
-  late Professions _professions;
-  String? selections;
+  final Professions _professions = Professions();
+  List<String> _professionsS = [];
   String? cities;
+
   String urls = "";
   String filename = "";
 
   @override
   void initState() {
     super.initState();
-    _professions = Professions();
-  }
-
-  void messageUpload() {
-    const snackBar = SnackBar(
-      content: Text("Espere mientras se carga su foto"),
-      duration: Duration(seconds: 2),
-    );
-    ScaffoldMessenger.of(context).showSnackBar(snackBar);
-  }
-
-  void messageError() {
-    const snackBar = SnackBar(
-      content: Text("Algo salió mal"),
-      duration: Duration(seconds: 2),
-    );
-    ScaffoldMessenger.of(context).showSnackBar(snackBar);
-  }
-
-  void messageSucces() {
-    const snackBar = SnackBar(
-      content: Text("Foto subida con éxito"),
-      duration: Duration(seconds: 2),
-    );
-    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    _professionsS = _professions.professions();
   }
 
   @override
@@ -59,7 +36,7 @@ class _Anuncios extends State<Anuncios> {
         elevation: 20.0,
         backgroundColor: _color,
         title: Text(
-          "Anuncios Quiqliq",
+          "Solicitud de Servicios",
           style: TextStyle(fontSize: 25.0, color: Colors.white),
         ),
       ),
@@ -71,7 +48,7 @@ class _Anuncios extends State<Anuncios> {
             children: <Widget>[
               Text(
                 textAlign: TextAlign.center,
-                "En esta seccion podrás crear un anuncio para encontrar un profesional para tu necesidad.",
+                "Solicita aquí tu servicio profesional.",
                 style: TextStyle(
                   color: Colors.white,
                   fontWeight: FontWeight.bold,
@@ -81,7 +58,7 @@ class _Anuncios extends State<Anuncios> {
               SizedBox(height: 12.0),
               Text(
                 textAlign: TextAlign.center,
-                "1) Escoje al profesional que necesita",
+                "1) Escoje al profesional que necesitas",
                 style: TextStyle(
                   color: Colors.white,
                   fontWeight: FontWeight.bold,
@@ -89,41 +66,33 @@ class _Anuncios extends State<Anuncios> {
                 ),
               ),
               SizedBox(height: 12),
-              DropdownButton<String>(
-                dropdownColor: Colors.black87,
-                isExpanded: true,
-                value: selections,
-                hint: Text(
-                  "Elige una opción",
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 20.0,
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 5.0),
+                child: DropdownMenu<String>(
+                  label: const Text(
+                    "Elija al profesional",
+                    style: TextStyle(color: Colors.white),
                   ),
+                  keyboardType: TextInputType.text,
+                  enableFilter: true,
+                  menuHeight: 200.0,
+                  requestFocusOnTap: true,
+                  textStyle: const TextStyle(color: Colors.white),
+                  dropdownMenuEntries: _professionsS
+                      .map(
+                        (String profess) =>
+                            DropdownMenuEntry(value: profess, label: profess),
+                      )
+                      .toList(),
+                  onSelected: (String? value) => setState(() {
+                    _jobController.text = value!;
+                  }),
                 ),
-                items: _professions.professions().map((String values) {
-                  return DropdownMenuItem(
-                    value: values,
-                    child: Text(
-                      values,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 20.0,
-                      ),
-                    ),
-                  );
-                }).toList(),
-                onChanged: (String? newValue) => setState(() {
-                  selections = newValue;
-                  _jobController.text = newValue ?? "Sin profesión";
-                }),
               ),
               SizedBox(height: 12),
               Text(
                 textAlign: TextAlign.center,
-                "2) Escoja la ciudad donde necesita al profesional",
+                "2) Ciudad donde necesita al profesional",
                 style: TextStyle(
                   color: Colors.white,
                   fontWeight: FontWeight.bold,
@@ -164,7 +133,7 @@ class _Anuncios extends State<Anuncios> {
               ),
               Text(
                 textAlign: TextAlign.justify,
-                "3) LLene los datos solicitados a continuación",
+                "3) LLene los datos a continuación",
                 style: TextStyle(
                   color: Colors.white,
                   fontWeight: FontWeight.bold,
@@ -173,7 +142,7 @@ class _Anuncios extends State<Anuncios> {
               ),
               SizedBox(height: 12),
               FormAdvertisement(
-                profetionalController: _jobController,
+                profetionalController: _jobController, //_jobController,
                 cityController: _city,
               ),
               SizedBox(height: 20),
