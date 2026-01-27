@@ -1,0 +1,98 @@
+{
+  "project_info": {
+    "project_number": "316360509652",
+    "project_id": "quicklick-9fbbb",
+    "storage_bucket": "quicklick-9fbbb.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:316360509652:android:bf62bfc91c600db9d75341",
+        "android_client_info": {
+          "package_name": "com.quicklick.quicklick"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "316360509652-g0htq3c4nm5jrskk9e60q81hh9mbrn4m.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.quicklick.quicklick",
+            "certificate_hash": "342939b91b673e4add3bc4f38342a335268d2e57"
+          }
+        },
+        {
+          "client_id": "316360509652-mlit7st390ael49qrg9crauf339mjnsb.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAzOjZEtTecyi4m99Xodxcax6cx2k864bo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "316360509652-mlit7st390ael49qrg9crauf339mjnsb.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "316360509652-sf2p6lj4gevjiv252c860agknuigkv0c.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.quicklick.quicklick"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:316360509652:android:fd69cc46657ca88fd75341",
+        "android_client_info": {
+          "package_name": "com.quiqliq.quiqliq"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "316360509652-9an83rdsb8p45t1kn8qkklvopqigqr0q.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.quiqliq.quiqliq",
+            "certificate_hash": "342939b91b673e4add3bc4f38342a335268d2e57"
+          }
+        },
+        {
+          "client_id": "316360509652-mlit7st390ael49qrg9crauf339mjnsb.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAzOjZEtTecyi4m99Xodxcax6cx2k864bo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "316360509652-mlit7st390ael49qrg9crauf339mjnsb.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "316360509652-sf2p6lj4gevjiv252c860agknuigkv0c.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.quicklick.quicklick"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
